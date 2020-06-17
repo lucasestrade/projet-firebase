@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>projet resto</title>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./service-worker.js', { scope: '/' });
+    }
+  </script>
+</head>
+<body>
+  <section id="app">
+    <header>
+      <div class="h-100p flex h-100p space-between align-center">
+        <div class="flex align-center">
+          <div class="img logo"></div>
+          <p>GOLAN'S</p>
+        </div>
+        <div>
+          <button id="cta-favs" class="img icon favs m-10"></button>
+          <button id="cta-notifs" class="img icon notifs m-10"></button>
+          <button id="cta-profile" class="img profile-pic m-10"></button>
+        </div>
+      </div>
+    </header>
+    <section class="skeleton"><div class="loader"></div></section>
+    <main class="outlet">
+      <div page="home"></div>
+      <div page="signin"></div>
+      <div page="signup"></div>
+      <div page="recap"></div>
+      <div page="paiement"></div>
+      <div page="settings"></div>
+      <div page="commentaries"></div>
+      <div page="favorites"></div>
+    </main>
+  </section>
+  <script src="./config.js"></script>
+  <script type="module" src="./src/app.js"></script>
+  <link rel="stylesheet" href="./assets/styles/main.css">
+</body>
+</html>
