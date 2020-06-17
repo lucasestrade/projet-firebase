@@ -1,17 +1,8 @@
 import page from 'page';
-import { auth } from './firebase.js';
-/*import firebase from 'firebase/app';
-import 'firebase/database';
-import 'firebase/firestore';
-import 'firebase/auth';*/
+import { auth, firestore } from './firebase.js';
 
 const app = document.querySelector('#app .outlet');
 const skeleton = document.querySelector('#app .skeleton');
-
-/*firebase.initializeApp(window.config);
-const database = firebase.database();
-const firestore = firebase.firestore();
-const auth = firebase.auth();*/
 
 auth.onAuthStateChanged(user => {
   if (!user) {
@@ -48,6 +39,21 @@ page('/login', async () => {
 });
 
 page('/', async () => {
+  /*firestore.collection('restaurants').add({
+    adresse: "25 rue Bertrand Gosier, 75015 Paris",
+    days: [true, true, false, true, true, true, false],
+    end: '23h30',
+    start: '12h30',
+    name: 'Le Novigrad',
+    note: 1,
+    phone: "0143819879",
+    type: "Italien"
+    user: {
+      uid: auth.currentUser.uid,
+      email: auth.currentUser.email
+    }
+  });*/
+
   // Navigation guard
   const loggedInState = window.localStorage.getItem('logged');
   if (loggedInState === 'false') return page('/login');
@@ -84,13 +90,27 @@ page('/', async () => {
   displayPage('home');
 });
 
-page();
-
 /*function scrollDown() {
   setTimeout(() => {
     window.scrollTo(0, document.body.scrollHeight);
   }, 0);
 }*/
+
+page('/restaurant-:id', async (req) => {
+  // Navigation guard
+  const loggedInState = window.localStorage.getItem('logged');
+  if (loggedInState == 'false') return page('/login');
+
+  const module = await import('./views/restaurant.js');
+  const Restaurant = module.default;
+
+  const ctn = app.querySelector('[page=restaurant]');
+  const RestaurantView = new Restaurant(ctn, req.params.id);
+
+  displayPage('restaurant');
+});
+
+page();
 
 function displayPage(name) {
   const skeleton = document.querySelector('#app .skeleton');
