@@ -1,5 +1,5 @@
 import page from 'page';
-import { auth, firestore } from './firebase.js';
+import { auth, storage } from './firebase.js';
 
 const app = document.querySelector('#app .outlet');
 const skeleton = document.querySelector('#app .skeleton');
@@ -11,7 +11,10 @@ auth.onAuthStateChanged(user => {
   }
   window.localStorage.setItem('logged', 'true');
   window.localStorage.setItem('userId', user.uid);
+  window.localStorage.setItem('profilePic', user.photoURL);
   document.dispatchEvent(new CustomEvent('user-logged', { detail: user }));
+  document.getElementById("cta-profile").style.backgroundImage = `url(${window.localStorage.getItem('profilePic')})`;
+
 });
 
 /*const notificationBtn = document.querySelector('#notification');
@@ -26,8 +29,9 @@ subcribeNotification();*/
 
 page('/login', async () => {
   // Navigation guard
+  document.title = "Connexion";
   const loggedInState = window.localStorage.getItem('logged');
-  if (loggedInState !== 'false') return page('/');
+  if (loggedInState !== 'false') return page('home');
 
   const module = await import('./views/signIn.js');
   const SignIn = module.default;
@@ -38,7 +42,7 @@ page('/login', async () => {
   displayPage('signin');
 });
 
-page('/', async () => {
+page('/home', async () => {
   /*firestore.collection('restaurants').add({
     adresse: "25 rue Bertrand Gosier, 75015 Paris",
     days: [true, true, false, true, true, true, false],
@@ -96,8 +100,9 @@ page('/', async () => {
   }, 0);
 }*/
 
-page('/restaurant-:id', async (req) => {
+page('/restaurant-:postalcode-:name', async (req) => {
   // Navigation guard
+  document.title = "Restaurant - " + req.params.name;
   const loggedInState = window.localStorage.getItem('logged');
   if (loggedInState == 'false') return page('/login');
 
@@ -105,9 +110,24 @@ page('/restaurant-:id', async (req) => {
   const Restaurant = module.default;
 
   const ctn = app.querySelector('[page=restaurant]');
-  const RestaurantView = new Restaurant(ctn, req.params.id);
+  const RestaurantView = new Restaurant(ctn, req.params.postalcode, req.params.name);
 
   displayPage('restaurant');
+});
+
+page('/settings', async (req) => {
+  // Navigation guard
+  document.title = "Parametres";
+  const loggedInState = window.localStorage.getItem('logged');
+  if (loggedInState == 'false') return page('/login');
+
+  const module = await import('./views/settings.js');
+  const Settings = module.default;
+
+  const ctn = app.querySelector('[page=settings]');
+  const SettingsView = new Settings(ctn);
+
+  displayPage('settings');
 });
 
 page();
@@ -121,6 +141,21 @@ function displayPage(name) {
   const p = app.querySelector(`[page="${name}"]`);
   p.setAttribute('active', true);
 }
+
+document.getElementById("cta-profile").addEventListener("click", function(){
+  page("settings");
+});
+
+document.getElementById("cta-home").addEventListener("click", function(){
+  page("home");
+});
+
+document.getElementById("cta-logout").addEventListener("click", function(){
+  auth.signOut().then(function(){
+    page("login");
+  });
+});
+
 
 /*function grantNotification() {
   if (('serviceWorker' in navigator) || 'PushManager' in window) {

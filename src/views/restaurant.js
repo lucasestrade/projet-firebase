@@ -1,15 +1,17 @@
 import { html, render } from "lit-html";
 
 export default class Restaurant {
-  constructor(page, id) {
-    this.restaurantId = id;
+  constructor(page, postalCode, name) {
+    this.postalCode = postalCode;
+    this.restaurantName = name;
     this.page = page;
     this.renderView();
   }
 
   template() {
     return html`
-      ${this.restaurantId}   
+      ${this.restaurantName}
+      ${this.postalCode}    
     `
   }
 

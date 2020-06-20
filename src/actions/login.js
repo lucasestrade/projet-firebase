@@ -1,4 +1,5 @@
 import { auth } from '../firebase.js';
+import page from 'page';
 
 export const loginAction = (mail, password) => {
     console.log(mail);
@@ -6,6 +7,6 @@ export const loginAction = (mail, password) => {
 
     auth.createUserWithEmailAndPassword(mail, password)
       .then(user => {
-        return page('/');
+        return page('home');
       }).catch(console.log);
 }
