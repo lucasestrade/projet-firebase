@@ -84,6 +84,7 @@ export default class Settings {
                                 user.updateProfile({
                                     photoURL : downloadUrl
                                 });
+                                window.localStorage.setItem('profilePic', user.photoURL);
                                 Popup.success("L'image de profil à été modifiée avec succès");
                             })
                         });

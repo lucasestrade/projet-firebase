@@ -1,8 +1,37 @@
 import page from 'page';
 import { auth, storage } from './firebase.js';
+import providers from './providers.js';
 
 const app = document.querySelector('#app .outlet');
 const skeleton = document.querySelector('#app .skeleton');
+
+if(navigator.onLine){
+  changeConnectionStatus("online");
+}else{
+  changeConnectionStatus("offline");
+}
+
+window.addEventListener('online', () => {
+  console.log("online");
+  changeConnectionStatus("online");
+});
+window.addEventListener('offline', () => {
+  changeConnectionStatus("offline");
+});
+
+function changeConnectionStatus(status){
+  let elConnectionStatus = document.getElementById("circle-connection-state");
+  let text = elConnectionStatus.firstElementChild;
+  if(status === "online"){
+    elConnectionStatus.classList.remove("offline");
+    elConnectionStatus.classList.add("online");
+    text.textContent = "ONLINE";
+  }else{
+    elConnectionStatus.classList.remove("online");
+    elConnectionStatus.classList.add("offline");
+    text.textContent = "OFFLINE";
+  }
+}
 
 auth.onAuthStateChanged(user => {
   if (!user) {
@@ -13,8 +42,7 @@ auth.onAuthStateChanged(user => {
   window.localStorage.setItem('userId', user.uid);
   window.localStorage.setItem('profilePic', user.photoURL);
   document.dispatchEvent(new CustomEvent('user-logged', { detail: user }));
-  document.getElementById("cta-profile").style.backgroundImage = `url(${window.localStorage.getItem('profilePic')})`;
-
+  document.getElementById("cta-profile").style.backgroundImage = `url(${window.localStorage.getItem('profilePic') !== "null" ? window.localStorage.getItem('profilePic') : providers.img.DEFAULT_PROFILE_PIC})`;
 });
 
 /*const notificationBtn = document.querySelector('#notification');
@@ -43,22 +71,6 @@ page('/login', async () => {
 });
 
 page('/home', async () => {
-  /*firestore.collection('restaurants').add({
-    adresse: "25 rue Bertrand Gosier, 75015 Paris",
-    days: [true, true, false, true, true, true, false],
-    end: '23h30',
-    start: '12h30',
-    name: 'Le Novigrad',
-    note: 1,
-    phone: "0143819879",
-    type: "Italien"
-    user: {
-      uid: auth.currentUser.uid,
-      email: auth.currentUser.email
-    }
-  });*/
-
-  // Navigation guard
   const loggedInState = window.localStorage.getItem('logged');
   if (loggedInState === 'false') return page('/login');
 
@@ -94,12 +106,6 @@ page('/home', async () => {
   displayPage('home');
 });
 
-/*function scrollDown() {
-  setTimeout(() => {
-    window.scrollTo(0, document.body.scrollHeight);
-  }, 0);
-}*/
-
 page('/restaurant-:postalcode-:name', async (req) => {
   // Navigation guard
   document.title = "Restaurant - " + req.params.name;
@@ -113,6 +119,21 @@ page('/restaurant-:postalcode-:name', async (req) => {
   const RestaurantView = new Restaurant(ctn, req.params.postalcode, req.params.name);
 
   displayPage('restaurant');
+});
+
+page('/favorites', async (req) => {
+  // Navigation guard
+  document.title = "Mes favoris";
+  const loggedInState = window.localStorage.getItem('logged');
+  if (loggedInState == 'false') return page('/login');
+
+  const module = await import('./views/favorites.js');
+  const Favorites = module.default;
+
+  const ctn = app.querySelector('[page=favorites]');
+  const FavoritesView = new Favorites(ctn);
+
+  displayPage('favorites');
 });
 
 page('/settings', async (req) => {
@@ -148,6 +169,10 @@ document.getElementById("cta-profile").addEventListener("click", function(){
 
 document.getElementById("cta-home").addEventListener("click", function(){
   page("home");
+});
+
+document.getElementById("cta-favs").addEventListener("click", function(){
+  page("favorites");
 });
 
 document.getElementById("cta-logout").addEventListener("click", function(){
