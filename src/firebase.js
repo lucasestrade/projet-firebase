@@ -5,6 +5,7 @@ import 'firebase/firestore';
 import 'firebase/auth';
 
 firebase.initializeApp(window.config);
+firebase.firestore().enablePersistence();
 
 export const storage = firebase.storage();
 export const database = firebase.database();

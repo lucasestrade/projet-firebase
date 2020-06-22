@@ -34,12 +34,20 @@ export default class Home {
   }
 
   loadDatas(){
+    let ctx = this;
     if(navigator.onLine){
-      loadHomeDatas();
+      loadHomeDatas(function(){
+        ctx.renderView();
+        cardEvent();
+        restaurantCardInViewportWhileScrolling();
+        restaurantCardInViewport();
+      });
+      return;
     }
-    this.renderView();
-    cardEvent();
-    restaurantCardInViewportWhileScrolling();
-    restaurantCardInViewport();
+
+      this.renderView();
+      cardEvent();
+      restaurantCardInViewportWhileScrolling();
+      restaurantCardInViewport();
   }
 }

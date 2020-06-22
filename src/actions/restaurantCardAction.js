@@ -37,11 +37,11 @@ export const cardEvent = (el = null) => {
     if(el === null){
         let cards = document.getElementsByClassName("restaurant-card");
         Array.prototype.forEach.call(cards, element => element.addEventListener("click", function(){
-        page(`restaurant-${this.dataset.postalcode}-${this.dataset.name}`)
+        page(`restaurant-${this.dataset.postalcode}-${this.dataset.name}-${this.dataset.id}`)
         }))
     }else{
         el.addEventListener("click", function(){
-            page(`restaurant-${el.dataset.postalcode}-${el.dataset.name}`)
+            page(`restaurant-${el.dataset.postalcode}-${el.dataset.name}-${el.dataset.id}`)
         });
     }
 }
@@ -87,6 +87,8 @@ export const ctaFavAction = (favorites = false) => {
                         .doc(uid)
                             .set({"fav": newDatas})
                     });
+                }else{
+                    window.localStorage.setItem("syncro", false);
                 }
                 let favsLocalStorage = JSON.parse(window.localStorage.getItem("favs")) || [];
                 if(status !== "fav"){

@@ -1,42 +1,29 @@
 import page from 'page';
 import { auth, storage } from './firebase.js';
 import providers from './providers.js';
+import { syncro, changeConnectionStatus } from './actions/network';
 
 const app = document.querySelector('#app .outlet');
 const skeleton = document.querySelector('#app .skeleton');
 
 if(navigator.onLine){
   changeConnectionStatus("online");
+  syncro();
 }else{
   changeConnectionStatus("offline");
 }
 
 window.addEventListener('online', () => {
-  console.log("online");
   changeConnectionStatus("online");
+  syncro();
 });
 window.addEventListener('offline', () => {
   changeConnectionStatus("offline");
 });
 
-function changeConnectionStatus(status){
-  let elConnectionStatus = document.getElementById("circle-connection-state");
-  let text = elConnectionStatus.firstElementChild;
-  if(status === "online"){
-    elConnectionStatus.classList.remove("offline");
-    elConnectionStatus.classList.add("online");
-    text.textContent = "ONLINE";
-  }else{
-    elConnectionStatus.classList.remove("online");
-    elConnectionStatus.classList.add("offline");
-    text.textContent = "OFFLINE";
-  }
-}
-
 auth.onAuthStateChanged(user => {
   if (!user) {
-    window.localStorage.setItem('logged', 'false');
-    return console.log('logged out');
+    return window.localStorage.setItem('logged', 'false');
   }
   window.localStorage.setItem('logged', 'true');
   window.localStorage.setItem('userId', user.uid);
@@ -106,7 +93,7 @@ page('/home', async () => {
   displayPage('home');
 });
 
-page('/restaurant-:postalcode-:name', async (req) => {
+page('/restaurant-:postalcode-:name-:id', async (req) => {
   // Navigation guard
   document.title = "Restaurant - " + req.params.name;
   const loggedInState = window.localStorage.getItem('logged');
@@ -116,7 +103,7 @@ page('/restaurant-:postalcode-:name', async (req) => {
   const Restaurant = module.default;
 
   const ctn = app.querySelector('[page=restaurant]');
-  const RestaurantView = new Restaurant(ctn, req.params.postalcode, req.params.name);
+  const RestaurantView = new Restaurant(ctn, req.params.postalcode, req.params.name, req.params.id);
 
   displayPage('restaurant');
 });

@@ -1,5 +1,6 @@
 import { html } from "lit-html";
 import providers from '../providers.js';
+import stars from '../components/stars';
 
 export default function createRestaurantsCards(restaurants, favorites = false){
     return (JSON.parse(restaurants)).map(restaurant => {
@@ -22,7 +23,8 @@ export default function createRestaurantsCards(restaurants, favorites = false){
                     <button title="${restaurant.name}" 
                     class="restaurant-card" 
                     data-postalcode="${restaurant.postal_code}" 
-                    data-name="${restaurant.name}" 
+                    data-name="${restaurant.name}"
+                    data-id="${restaurant.id}"
                     style="background-image:url(${restaurant.background_image});">
                         <div class="card flex column">
                             <div>
@@ -41,7 +43,7 @@ export default function createRestaurantsCards(restaurants, favorites = false){
                                 <p>${restaurant.phone}</p>
                             </div>
                             <div class="flex justify-center">
-                                ${displayNote(restaurant.note)}
+                                ${stars(restaurant.note)}
                             </div>
                         </div>
                     </button>
@@ -51,20 +53,4 @@ export default function createRestaurantsCards(restaurants, favorites = false){
             return null;
         }
     })
-
-    function displayNote(note){
-        let array =  Array.apply(null, Array(note)).map((val, idx) => idx);
-        return array.map(el => {
-            return html`
-                <svg version="1.0"
-                    class="star-note" viewBox="0 0 1280.000000 1216.000000"
-                    preserveAspectRatio="xMidYMid meet">
-                    <g transform="translate(0.000000,1216.000000) scale(0.100000,-0.100000)" 
-                    stroke="none">
-                    <path d="${providers.icons.STAR}"/>
-                    </g>
-                </svg>
-            `
-        })
-    }
 }

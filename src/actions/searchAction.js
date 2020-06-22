@@ -3,12 +3,7 @@ import { cardEvent } from "./restaurantCardAction";
 export const searchAction = () => {
     document.getElementById("field-search-restaurant").addEventListener("keyup", function(){
         if(this.value !== ""){
-            let res;
-            if(!navigator.onLine){
-                res = searchOnline(this.value);
-            }else{
-                res = searchOffLine(this.value);
-            }
+            let res = search(this.value);
             createResultBox(this, res);
         }else{
             let mainBlock = document.getElementById("block-result-search");
@@ -19,17 +14,14 @@ export const searchAction = () => {
     })
 }
 
-function searchOnline(value){
-
-}
-
-function searchOffLine(value){
+function search(value){
+    let val = value.toLowerCase();
     let restaurants = JSON.parse(window.localStorage.getItem("restaurants"));
     return restaurants.map(element => {
-        if((element.name).toLowerCase().startsWith(value)
-        || (element.phone).toLowerCase().startsWith(value)
-        || (element.city).toLowerCase().startsWith(value)
-        || (element.postal_code).toString().startsWith(value)){
+        if((element.name).toLowerCase().startsWith(val)
+        || (element.phone).toLowerCase().startsWith(val)
+        || (element.city).toLowerCase().startsWith(val)
+        || (element.postal_code).toString().startsWith(val)){
             return element;
         }
     });
@@ -51,6 +43,7 @@ function createResultBox(el, res){
             cta.setAttribute("title", el.name);
             cta.setAttribute("data-postalcode", el.postal_code);
             cta.setAttribute("data-name", el.name);
+            cta.setAttribute("data-id", el.id);
             let resImg = document.createElement("div");
             resImg.setAttribute("class", "img");
             resImg.setAttribute("style", `background-image: url(${el.background_image});`);

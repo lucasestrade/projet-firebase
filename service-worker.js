@@ -26,6 +26,7 @@ self.addEventListener('install', function(event) {
           '/src/views/settings.js',
           '/src/actions/restaurantCardAction.js',
           '/src/actions/searchAction.js',
+          '/src/actions/network.js',
           '/src/actions/localStorageAction.js',
           '/src/views/favorites.js',
           '/src/views/signIn.js',
@@ -36,7 +37,8 @@ self.addEventListener('install', function(event) {
           '/assets/images/manifest/icon-192x192.png',
           '/assets/images/manifest/icon-512x512.png',
           '/config.js',
-          '/node_modules/es-dev-server'
+          '/node_modules/es-dev-server',
+          '/node_modules/@firebase/firestore/dist/index.esm.js'
         ])
       })
   );
