@@ -1,6 +1,8 @@
-import { firestore } from "../firebase";
+import { auth, firestore } from "../firebase";
 import Popup from "../components/popup";
 import { html } from 'lit-html';
+import { format } from 'date-fns';
+import providers from "../providers";
 
 export function findRestaurant(id){
     if(navigator.onLine){
@@ -14,6 +16,17 @@ export function findRestaurant(id){
                                 .get()
                                     .then(function(doc){
                                         docData["note"] = doc.data().notes;
+                                    })
+                    await firestore
+                        .collection('commentaries')
+                            .doc(id)
+                                .get()
+                                    .then(function(doc){
+                                        if(doc.data()){
+                                            docData["commentaries"] = doc.data();
+                                        }else{
+                                            docData["commentaries"] = {};
+                                        }
                                     })
                     return docData;
                 });
@@ -237,4 +250,82 @@ function onsubmit(el){
         parent.parentNode.remove();
         Popup.success("Votre commande a bien été prise en compte");
     })
+}
+
+export function onCommentaryFormSubmit(){
+    document.getElementById("form-write-commentary").addEventListener("submit", function(e){
+        e.preventDefault();
+        let id = this.dataset.id;
+        let value = this.firstElementChild.value;
+        if(navigator.onLine){
+            firestore.collection('commentaries')
+                .doc(id)
+                    .get()
+                        .then(function(doc){
+                            let data = doc.data();
+                            if(data && data[auth.currentUser.uid]){
+                                data[auth.currentUser.uid].push({
+                                    value : value,
+                                    date : new Date()
+                                });
+                                firestore.collection('commentaries')
+                                    .doc(id)
+                                        .set(data)
+                            }else{
+                                firestore.collection('commentaries')
+                                    .doc(id)
+                                        .set({...data,
+                                            [auth.currentUser.uid]: [{
+                                                value : value,
+                                                date : format(new Date(), providers.date.USER_FORMAT)
+                                            }]
+                                        })
+                            }
+                        })
+        }else{
+            let obj = {
+                value: value,
+                date: format(new Date(), providers.date.USER_FORMAT)
+            };
+            let commentaries = JSON.parse(window.localStorage.getItem("commentaries"));
+            if(commentaries && commentaries[this.dataset.id]){
+                commentaries[this.dataset.id].push(obj);
+                window.localStorage.setItem("commentaries", JSON.stringify(commentaries));
+            }else{
+                window.localStorage.setItem("commentaries", JSON.stringify({[this.dataset.id] : [obj]}));
+            }
+
+            window.localStorage.setItem("syncro", "false");
+        }
+
+        Popup.success("Votre commentaire a été publié avec succès");
+    })
+}
+
+export function generateCommentariesList(commentaries){
+    let mainBlockCommentaries = document.createElement("div");
+
+    for (const [key, value] of Object.entries(commentaries)) {
+        value.map(commentary => {
+            let commentaryBlock = document.createElement("div");
+            commentaryBlock.className = "commentary-block flex column";
+            let name = document.createElement("p");
+            name.className = "commentary-name";
+            name.innerText = key;
+            let date = document.createElement("p");
+            date.className = "commentary-date";
+            date.innerText = commentary.date;
+
+            let com = document.createElement("p");
+            com.className = "commentary-value";
+            com.innerText = commentary.value;
+            commentaryBlock.append(name);
+            commentaryBlock.append(date);
+            commentaryBlock.append(com);
+
+            mainBlockCommentaries.append(commentaryBlock);
+        })
+    }
+      
+    return html`${mainBlockCommentaries}`;
 }

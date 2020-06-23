@@ -10,9 +10,10 @@ export default class SignIn {
 
   template() {
     return html`
-      <form id="form-login">
-        <input type="email" value="zsdf@ff.fr" class="field" placeholder="Entrer un mail" />
-        <input type="password" class="field" placeholder="Entrer un mot de passe" />
+      <h1 class="title">Connexion</h1>
+      <form id="form-login" class="form-login flex column">
+        <input type="email" value="zsdf@ff.fr" class="field connection-field" placeholder="Entrer un mail" />
+        <input type="password" class="field connection-field" placeholder="Entrer un mot de passe" />
         <button type="submit" class="cta" >Se connecter</button>
       </form>    
     `

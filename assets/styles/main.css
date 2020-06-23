@@ -70,6 +70,10 @@ button{
   width: 300px;
 }
 
+.connection-field:focus{
+  width: initial;
+}
+
 .w-100p{
   width: 100%;
 }
@@ -126,6 +130,50 @@ h1{
 
 .scale-1-1:hover{
   transform: scale(1.1);
+}
+
+.form-login{
+  padding: 20px;
+  width: 500px;
+  max-width: 100%;
+  margin: auto;
+}
+
+.write-commentary, .commentaries{
+  max-width: 100%;
+}
+
+.form-write-commentary{
+  width: 500px;
+  max-width: 100%;
+}
+
+.commentary-block{
+  border-radius: 5px;
+  background-color: #e6e6e6;
+  margin: 10px;
+}
+
+.commentary-block p{
+  margin: 5px;
+}
+
+.commentary-block .commentary-name, .commentary-block .commentary-value{
+  font-weight: bold;
+}
+
+.commentary-block .commentary-date{
+  font-size: 10px;
+}
+
+.commentary-block .commentary-name{
+  font-size: 13px;
+}
+
+.form-write-commentary textarea{
+  height: 100px;
+  border-radius: 5px;
+  padding: 10px;
 }
 
 .title{

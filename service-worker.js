@@ -57,7 +57,11 @@ self.addEventListener('fetch', function (event) {
               const responseClone = response.clone();
               caches.open(cacheVersion)
                 .then(function (cache) {
-                  cache.put(event.request, responseClone);
+                  if(!(event.request.url.indexOf('http') === 0)){
+                    //skip request
+                  }else{
+                    cache.put(event.request, responseClone);
+                  }
                 });
 
               return response;

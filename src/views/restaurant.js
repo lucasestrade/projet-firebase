@@ -1,5 +1,5 @@
 import { html, render } from "lit-html";
-import { onPlateClick, submitNote, findRestaurant, generatePlateList } from "../actions/restaurantAction";
+import { generateCommentariesList, onCommentaryFormSubmit, onPlateClick, submitNote, findRestaurant, generatePlateList } from "../actions/restaurantAction";
 import stars, { calcNoteRound } from '../components/stars';
 import { storage } from '../firebase';
 
@@ -23,6 +23,17 @@ export default class Restaurant {
           <p>
             ${this.restaurant.description}
           </p>
+        </div>
+        <div class="open-days">
+          <h2>Jours d'ouverture</h2>
+          <p>De ${this.restaurant.start} à ${this.restaurant.end}</p>
+          <p>Lundi : ${this.restaurant.days[0] ? "ouvert" : "fermé"}</p>
+          <p>Mardi : ${this.restaurant.days[1] ? "ouvert" : "fermé"}</p>
+          <p>Mercredi : ${this.restaurant.days[2] ? "ouvert" : "fermé"}</p>
+          <p>Jeudi : ${this.restaurant.days[3] ? "ouvert" : "fermé"}</p>
+          <p>Vendredi : ${this.restaurant.days[4] ? "ouvert" : "fermé"}</p>
+          <p>Samedi : ${this.restaurant.days[5] ? "ouvert" : "fermé"}</p>
+          <p>Dimanche : ${this.restaurant.days[6] ? "ouvert" : "fermé"}</p>
         </div>
         <div class="note">
           <h2>Note</h2>
@@ -56,6 +67,18 @@ export default class Restaurant {
           </div>
           ${generatePlateList(this.restaurant.food)}
         </div>
+        <div class="commentaries">
+          <h2>Commentaires</h2>
+          <div class="flex column">
+          <div id="write-commentary" class="write-commentary">
+            ${generateCommentariesList(this.restaurant.commentaries)}
+            <form id="form-write-commentary" data-id="${this.id}" class="form-write-commentary flex column">
+              <textarea placeholder="Ecrire un commentaire..."></textarea>
+              <button type="submit" class="cta" >Publier le commentaire</button>
+            </form>
+          </div>
+          </div>
+        </div>
       </div>
     `
   }
@@ -71,6 +94,7 @@ export default class Restaurant {
     this.renderBackground(this.postalCode, this.name);
     submitNote(this.id);
     onPlateClick();
+    onCommentaryFormSubmit();
   }
 
   renderBackground(postalCode, name){

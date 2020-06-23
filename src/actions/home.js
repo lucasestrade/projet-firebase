@@ -26,6 +26,17 @@ export const loadHomeDatas = (callback) => {
                                     .then(function(doc){
                                         docData["note"] = doc.data().notes;
                                     })
+                    await firestore
+                        .collection('commentaries')
+                            .doc(id)
+                                .get()
+                                    .then(function(doc){
+                                        if(doc.data()){
+                                            docData["commentaries"] = doc.data();
+                                        }else{
+                                            docData["commentaries"] = {};
+                                        }
+                                    })
                     if (type === 'added') {
                         docData["id"] = doc.id;
                         docData["fav"] = favs.includes(doc.id);
