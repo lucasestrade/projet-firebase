@@ -32,16 +32,6 @@ auth.onAuthStateChanged(user => {
   document.getElementById("cta-profile").style.backgroundImage = `url(${window.localStorage.getItem('profilePic') !== "null" ? window.localStorage.getItem('profilePic') : providers.img.DEFAULT_PROFILE_PIC})`;
 });
 
-/*const notificationBtn = document.querySelector('#notification');
-notificationBtn.addEventListener('click', () => {
-  const result = confirm('Would you lie to receive push notification for more porn ?');
-  if (result) {
-    grantNotification();
-  }
-});
-
-subcribeNotification();*/
-
 page('/login', async () => {
   // Navigation guard
   document.title = "Connexion";
@@ -64,31 +54,10 @@ page('/home', async () => {
   const module = await import('./views/home.js');
   const Home = module.default;
 
-  //subcribeNotification();
-
   const messages = [];
 
   const ctn = app.querySelector('[page=home]');
   const HomeView = new Home(ctn);
-
-  document.addEventListener('send-message', ({ detail: message }) => {
-    if (!message) return;
-    // Using realtime database
-    // database.ref().child('/messages').push({
-    //   content: message,
-    //   date: Date.now()
-    // });
-
-    // Using firestore
-    /*firestore.collection('messages').add({
-      content: message,
-      date: Date.now(),
-      user: {
-        uid: auth.currentUser.uid,
-        email: auth.currentUser.email
-      }
-    });*/
-  });
 
   displayPage('home');
 });
@@ -169,25 +138,35 @@ document.getElementById("cta-logout").addEventListener("click", function(){
 });
 
 
-/*function grantNotification() {
+
+
+
+
+
+
+
+const notificationBtn = document.querySelector('#cta-notifs');
+notificationBtn.addEventListener('click', () => {
+  const result = confirm('Souhaitez vous recevoir les notifications pour ce site ?');
+  if (result) {
+    grantNotification();
+  }
+});
+
+subcribeNotification();
+
+function grantNotification() {
   if (('serviceWorker' in navigator) || 'PushManager' in window) {
     Notification.requestPermission()
       .then(result => {
-        if (result === 'denied') {
-          console.log("Permission not granted");
-        } else if (result === 'default') {
-          console.log('Permission was dismissed');
-        }
-
-        console.log('Notification granted', result);
         subcribeNotification();
       })
   } else {
     console.log("Sorry, Web push notification aren't supported on your device :'(");
   }
-}*/
+}
 
-/*function subcribeNotification() {
+function subcribeNotification() {
   const noficationRegistered = window.localStorage.getItem('noficationRegistered');
   if (Notification.permission === 'granted' && auth.currentUser && noficationRegistered !== 'true') {
     navigator.serviceWorker.ready
@@ -197,7 +176,6 @@ document.getElementById("cta-logout").addEventListener("click", function(){
           applicationServerKey: urlBase64ToUint8Array(window.config.publicKey)
         })
         .then(async subscription => {
-          console.log(subscription);
           try {
             const result = await fetch(`${window.config.notificationBackend}/subscribe`, {
               method: 'POST',
@@ -217,9 +195,9 @@ document.getElementById("cta-logout").addEventListener("click", function(){
         })
       })
   }
-}*/
+}
 
-/*function urlBase64ToUint8Array(base64String) {
+function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
   const base64 = (base64String + padding)
     .replace(/-/g, '+')
@@ -232,4 +210,4 @@ document.getElementById("cta-logout").addEventListener("click", function(){
     outputArray[i] = rawData.charCodeAt(i);
   }
   return outputArray;
-}*/
+}

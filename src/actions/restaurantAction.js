@@ -257,48 +257,61 @@ export function onCommentaryFormSubmit(){
         e.preventDefault();
         let id = this.dataset.id;
         let value = this.firstElementChild.value;
-        if(navigator.onLine){
-            firestore.collection('commentaries')
-                .doc(id)
-                    .get()
-                        .then(function(doc){
-                            let data = doc.data();
-                            if(data && data[auth.currentUser.uid]){
-                                data[auth.currentUser.uid].push({
-                                    value : value,
-                                    date : new Date()
-                                });
-                                firestore.collection('commentaries')
-                                    .doc(id)
-                                        .set(data)
-                            }else{
-                                firestore.collection('commentaries')
-                                    .doc(id)
-                                        .set({...data,
-                                            [auth.currentUser.uid]: [{
-                                                value : value,
-                                                date : format(new Date(), providers.date.USER_FORMAT)
-                                            }]
-                                        })
-                            }
-                        })
-        }else{
-            let obj = {
-                value: value,
-                date: format(new Date(), providers.date.USER_FORMAT)
-            };
-            let commentaries = JSON.parse(window.localStorage.getItem("commentaries"));
-            if(commentaries && commentaries[this.dataset.id]){
-                commentaries[this.dataset.id].push(obj);
-                window.localStorage.setItem("commentaries", JSON.stringify(commentaries));
+        if(value !== "" && value !== null){
+            if(navigator.onLine){
+                firestore.collection('commentaries')
+                    .doc(id)
+                        .get()
+                            .then(function(doc){
+                                let data = doc.data();
+                                if(data && data[auth.currentUser.uid]){
+                                    let date = format(new Date(), providers.date.USER_FORMAT);
+                                    data[auth.currentUser.uid].push({
+                                        value : value,
+                                        date : date
+                                    });
+                                    firestore.collection('commentaries')
+                                        .doc(id)
+                                            .set(data)
+                                }else{
+                                    firestore.collection('commentaries')
+                                        .doc(id)
+                                            .set({...data,
+                                                [auth.currentUser.uid]: [{
+                                                    value : value,
+                                                    date : format(new Date(), providers.date.USER_FORMAT)
+                                                }]
+                                            })
+                                }
+                                if (Notification.permission === "granted" && window.localStorage.getItem("noficationRegistered") === "true") {
+                                    new Notification("Commentaire", {
+                                        body: "Votre commentaire a été ajouté avec succès"
+                                    });
+                                }
+                            })
             }else{
-                window.localStorage.setItem("commentaries", JSON.stringify({[this.dataset.id] : [obj]}));
+                let obj = {
+                    value: value,
+                    date: format(new Date(), providers.date.USER_FORMAT)
+                };
+                let commentaries = JSON.parse(window.localStorage.getItem("commentaries"));
+                if(commentaries && commentaries[this.dataset.id]){
+                    commentaries[this.dataset.id].push(obj);
+                    window.localStorage.setItem("commentaries", JSON.stringify(commentaries));
+                }else{
+                    window.localStorage.setItem("commentaries", JSON.stringify({[this.dataset.id] : [obj]}));
+                }
+
+                window.localStorage.setItem("syncro", "false");
+                if (Notification.permission === "granted" && window.localStorage.getItem("noficationRegistered") === "true") {
+                    new Notification("Commentaire", {
+                        body: "Vous êtes hors ligne. Votre commentaire a été enregistré et sera envoyé dans la base de données lorsque vous serez à nouveau connecté à internet"
+                    });
+                }
             }
 
-            window.localStorage.setItem("syncro", "false");
+            Popup.success("Votre commentaire a été publié avec succès");
         }
-
-        Popup.success("Votre commentaire a été publié avec succès");
     })
 }
 

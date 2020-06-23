@@ -4,6 +4,6 @@ import page from 'page';
 export const loginAction = (mail, password) => {
     auth.createUserWithEmailAndPassword(mail, password)
       .then(user => {
-        page('home');
+        return page('home');
       }).catch(console.log);
 }

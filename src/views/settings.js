@@ -86,6 +86,11 @@ export default class Settings {
                                 });
                                 window.localStorage.setItem('profilePic', user.photoURL);
                                 Popup.success("L'image de profil à été modifiée avec succès");
+                                if (Notification.permission === "granted" && window.localStorage.getItem("noficationRegistered") === "true") {
+                                    new Notification("Paramètres", {
+                                        body: "L'image de votre profil a été modifiée"
+                                    });
+                                }
                             })
                         });
                     });
